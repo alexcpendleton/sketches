@@ -1,5 +1,5 @@
 // inspiration http://www.tylerlhobbs.com/static/img/st-a-800.jpg
-let midpoint = { x: 0, y: 0 };
+
 const dotRadius = 3;
 let dotColor = {};
 let densityStep = 10;
@@ -10,11 +10,9 @@ const sq = 20;
 function setup() {
   dotColor = color(0, 0, 0);
   bgColor = color(255, 255, 255);
-  let s = 600;
-  createCanvas(s, s);
+
+  createCanvas(screen.width, screen.height);
   background(bgColor);
-  const m = s / 2;
-  midpoint = { x: m, y: m };
   noLoop();
 }
 
