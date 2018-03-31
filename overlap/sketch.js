@@ -52,28 +52,38 @@ function draw() {
   maxShapes.x = ceil((width + padding.x) / shapeRadius);
   maxShapes.y = ceil((height + padding.y) / shapeRadius);
   maxShapes.y = 10;
-  maxShapes.x = 5;
+  maxShapes.x = 10;
 
   let buffer = {
-    x: shapeRadius * 2,
-    y: shapeRadius * 2
+    x: 0, //shapeRadius * 2,
+    y: 0 //shapeRadius * 2
   }
   translate(buffer.x, buffer.y)
 
-  for (let i = 0; i < maxShapes.x; i++) {
-    //let j = 0;
-    for (let j = 0; j < maxShapes.y; j++) {
-      let isEvenRow = i % 2 == 0;
+  for (let j = 0; j < maxShapes.y; j++) {
+    for (let i = 0; i < maxShapes.x; i++) {
+
+      let isEvenRow = j % 2 == 0;
       let fillColor = isEvenRow ? color(255, 0, 0) : color(0, 255, 255);
+
       fill(fillColor);
-      let x = i * (shapeRadius * 2);
-      let y = j * (shapeRadius * 2);
+      let x = i * (shapeRadius * 3);
+      let y = j * ((shapeRadius * 1) * .875);
+      //x = round5(x);
+      //y = round5(y);
+      //y = y - (shapeRadius * 1.25)
       if (!isEvenRow) {
-        x = x + (shapeRadius * .25);
-        y = y + (shapeRadius)
+        x = x + (shapeRadius * 1.5);
+        y = y - (shapeRadius * 1.75)
+
+      } else {
+        //y = y + (shapeRadius * .125)
+        //y = y - (shapeRadius)
+
+        //x = round5(x);
+        //y = round5(y);
       }
-      //x = x + buffer.x;
-      //y = y + buffer.y;
+
       console.log({
         i,
         j,
@@ -82,26 +92,6 @@ function draw() {
         shapeRadius
       })
       polygon(x, y, shapeRadius, 6);
-      // let offset = {
-      //   x: 0,
-      //   y: 0
-      // };
-      // let c = color(255, 0, 0);
-      // if (beep % 2 == 0) {
-      //   offset.x = shapeRadius * i * 3;
-      //   offset.y = shapeRadius * j; // 1.75;
-      // } else {
-      //   offset.x = shapeRadius * i * 1.5;
-      //   offset.y = shapeRadius * j; // 1.75;
-      //   c = color(0, 255, 255);
-      // }
-      //offset.y += 100;
-      //offset.x += shapeRadius;
-      //offset.x += i*shapeRadius
-      //offset.y = offset.y * 2;
-      // beep++;
-      // fill(c);
-      //polygon(offset.x, offset.y, shapeRadius, sides);
       if (amountDrawn > 1000) {
         console.error("AHHHHHH");
         return;
@@ -110,6 +100,10 @@ function draw() {
   }
 
   //frameCount++;
+}
+
+function round5(x) {
+  return Math.floor(x / 5) * 5;
 }
 
 function randomColor() {
@@ -134,5 +128,5 @@ function polygon(x, y, radius, npoints) {
   rectMode(CENTER);
   noFill();
 
-  rect(x, y, radius * 2, radius * 2);
+  //rect(x, y, radius * 2, radius * 2);
 }
