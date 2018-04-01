@@ -11,13 +11,23 @@ function setup() {
     y: height / 2
   };
   noLoop();
+  setupSeed();
+}
+function setupSeed() {
+  const fromLocation = new URL(document.location).searchParams.get("seed");
+  if (fromLocation) {
+    window.seed = parseFloat(fromLocation);
+  } else {
+    window.seed = ceil(random(0, 1000000));
+  }
+  console.log(window.seed);
+  randomSeed(window.seed);
 }
 
 let frameCount = 0;
 let amountDrawn = 0;
 
 function draw() {
-  randomSeed(2734234234);
   // start with tiling polygons within the bounds of the canvas
   // fill it up
   // each one with a random color fill
@@ -87,9 +97,8 @@ function draw() {
   drawPolygons(toBeDrawn);
 }
 function drawPolygons(toBeDrawn) {
-  console.log("drawPolygons", toBeDrawn);
-  const copy = toBeDrawn; // toBeDrawn.slice();
-  //shuffleArray(copy);
+  const copy = toBeDrawn.slice();
+  shuffleArray(copy);
   for (let i = 0; i < copy.length; i++) {
     const element = copy[i];
     drawPolygon(element);
@@ -103,7 +112,7 @@ function shuffleArray(array) {
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
+    randomIndex = Math.floor(random() * currentIndex);
     currentIndex -= 1;
 
     // And swap it with the current element.
@@ -115,22 +124,6 @@ function shuffleArray(array) {
   return array;
 }
 function nextShapeColor(x, y) {
-  // let maximumYellow = color(255, 241, 59);
-  // let veryPaleYellow = color(255, 253, 180);
-  // let paleGoldenrod = color(222, 229, 160);
-  // let darkLiverHorses = color(84, 70, 47);
-  // let canary = color(255, 253, 152);
-  // let options = [
-  //   maximumYellow,
-  //   maximumYellow,
-  //   maximumYellow,
-  //   veryPaleYellow,
-  //   paleGoldenrod,
-  //   paleGoldenrod,
-  //   darkLiverHorses,
-  //   canary,
-  //   canary
-  // ];
   let options = [
     color("#ed8b00"),
     color("#ffdd40"),
@@ -144,7 +137,6 @@ function nextShapeColor(x, y) {
   let index = random(options.length - 1);
   index = floor(index);
   if (options[index] === undefined) {
-    console.log(index);
     return options[0];
   }
   const a = random(225, 255);
@@ -179,7 +171,6 @@ function makePolygon(x, y, radius, npoints) {
   return { points, radius, x, y };
 }
 function drawPolygon(poly) {
-  console.log(poly);
   fill(poly.fillColor);
   beginShape();
   for (let i = 0; i < poly.points.length; i++) {
@@ -194,12 +185,6 @@ function polygon(x, y, radius, npoints) {
   let angle = TWO_PI / npoints;
   beginShape();
   for (let a = 0; a < TWO_PI; a += angle) {
-    // if (a < 3) {
-    //   stroke(color(255, 0, 0));
-    // } else {
-    //   endShape(CLOSE);
-    //   stroke(color(0, 0, 0));
-    // }
     let sx = x + cos(a) * radius;
     let sy = y + sin(a) * radius;
     vertex(sx, sy);
@@ -207,6 +192,4 @@ function polygon(x, y, radius, npoints) {
   endShape(CLOSE);
   rectMode(CENTER);
   noFill();
-
-  //rect(x, y, radius * 2, radius * 2);
 }
