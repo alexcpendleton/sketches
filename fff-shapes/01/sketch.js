@@ -1,7 +1,7 @@
 let mid = {};
 
-const rows = 6;
-const cols = rows;
+const rows = 8;
+const cols = 40;
 const results = [];
 const shapeSize = 100;
 let colors = {};
@@ -21,82 +21,85 @@ function setup() {
   setupSeed();
 }
 function draw() {
-  translate(mid.x / 2 + shapeSize / 2, shapeSize / 2);
+  //translate(mid.x / 2 + shapeSize / 2, shapeSize / 2);
+
   const made = make();
   made.forEach(t => {
     t.draw();
   });
-  made.forEach(t => {
-    return;
-    if (t.s !== undefined) {
-      fill(0);
-      if (t.s % 2 == 0) {
-        text(t.s, t.points[0].x + 10, t.points[0].y + 10);
-      } else {
-        text(t.s, t.points[0].x - 10, t.points[0].y - 10);
-      }
-    }
-  });
+  ellipse(0, 0, 10, 10);
+}
+
+function calcPoints(i, j) {
+  let npoints = 3;
+  let radius = shapeSize / 2;
+  let points = [];
+  let x = i;
+  let y = j;
+  let angle = TWO_PI / npoints;
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a - PI / 2) * radius;
+    let sy = y + sin(a - PI / 2) * radius;
+    points.push({ x: sx, y: sy, a: a });
+  }
+  return points;
+}
+function drawTri(colIndex, color) {
+  let t = new Tri();
+  let pts = calcPoints(0, 0);
+  t.points = pts;
+  if (color) {
+    t.fill = color;
+  }
+  // t.points[0] = { x: 0, y: 0 };
+  // t.points[1] = { x: shapeSize, y: 0 };
+  // t.points[2] = { x: shapeSize * 0, y: shapeSize };
+  //console.log();
+  let tr = pts[0];
+  //translate(tr.x + shapeSize * 0.25, tr.y);
+  t.draw();
+
+  //ellipse(0, 0, 5, 5);
+  //text(colIndex.toString(), 0, -10);
+  return pts;
 }
 function make() {
-  // |/|/|/|/|
-  // |/|/|/|/|
-  // |/|/|/|/|
-  // Draw a right triangle at 0,0;0,n;n,0
-  // Draw a right triangle at n,n;n,0;0,n;
-  const calcPoints = (i, j) => {
-    return {
-      tl: {
-        x: i * shapeSize,
-        y: j * shapeSize
-      },
-      tr: {
-        x: i * shapeSize,
-        y: j * shapeSize + shapeSize
-      },
-      bl: {
-        x: i * shapeSize + shapeSize,
-        y: j * shapeSize
-      },
-      br: {
-        x: i * shapeSize + shapeSize,
-        y: j * shapeSize + shapeSize
+  console.log("cols", cols);
+  let nextY = 0;
+  let oddX = 0;
+
+  for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
+    push();
+    const x = rowIndex % 2 == 0 ? 0 : oddX;
+    translate(x, nextY * rowIndex * 3);
+    for (let colIndex = 0; colIndex < cols; colIndex++) {
+      let d = drawTri(colIndex, chooseShapeColor(rowIndex, colIndex));
+      translate(d[1].x, d[1].y * -1); //d[1].y);
+      push();
+      rotate(radians(180));
+      d = drawTri(colIndex, chooseShapeColor(rowIndex, colIndex + 2));
+      pop();
+      translate(d[1].x, d[1].y); //d[1].y);
+      nextY = d[1].y;
+      if (oddX == 0) {
+        oddX = -1 * d[1].x;
       }
-    };
-  };
-  for (let j = 0; j < rows; j++) {
-    let s = 0;
-    for (let i = 0; i < cols; i++) {
-      let t1 = new Tri();
-      let t2 = new Tri();
-      let pts = calcPoints(i, j);
-
-      t1.points[0] = pts.tl;
-      t1.points[1] = pts.tr;
-      t1.points[2] = pts.bl;
-      t1.fill = chooseShapeColor(j, s);
-      t1.note = { n: "t1", i, j, pts };
-      t1.s = s;
-      t1.row = j;
-
-      t2.points[0] = pts.br;
-      t2.points[1] = pts.tr;
-      t2.points[2] = pts.bl;
-      s++;
-      t2.fill = chooseShapeColor(j, s);
-      t2.note = { n: "t2", i, j, pts };
-      t2.s = s;
-      t2.row = j;
-      s++;
-      results.push(t1);
-      results.push(t2);
+      if (colIndex == cols - 1) {
+        console.log(rowIndex, d);
+      }
     }
-    s++;
+    console.log("nextY", nextY);
+    pop();
   }
-  console.log(results);
+
   return results;
 }
 function chooseShapeColor(row, s) {
+  if (row % 2 == 0) {
+    return s % 2 == 0 ? colors.shapeA : colors.shapeB;
+  }
+  return s % 2 == 0 ? colors.shapeB : colors.shapeA;
+
   // 0,1 0,2 0,5 0,6  0,9 0,10
   if (row % 2 == 0) {
     if ([1, 2, 5, 6, 9, 10].indexOf(s) != -1) {
@@ -115,7 +118,8 @@ function Tri() {
   this.fill = color("#fff");
   this.draw = () => {
     strokeWeight(1);
-    stroke(0);
+    stroke(0, 0, 0, 64);
+
     fill(this.fill);
     triangle(
       this.points[0].x,
