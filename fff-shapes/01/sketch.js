@@ -131,9 +131,13 @@ function Tri() {
   this.points = [];
   this.fill = color("#fff");
   this.draw = () => {
-    strokeWeight(1);
-    stroke(0, 0, 0, 64);
-
+    const r = random(0, 1);
+    if (r < 0.5) {
+      strokeWeight(1);
+      stroke(0, 0, 0, 64);
+    } else {
+      noStroke();
+    }
     fill(this.fill);
     triangle(
       this.points[0].x,
