@@ -1,6 +1,6 @@
 let mid = {};
 
-const rows = 8;
+const rows = 14;
 const cols = 40;
 const results = [];
 const shapeSize = 100;
@@ -94,7 +94,21 @@ function make() {
 
   return results;
 }
+function randomIn(arr) {
+  const i = Math.floor(random(0, arr.length));
+  return arr[i];
+}
 function chooseShapeColor(row, s) {
+  const options = [
+    color("#40e0d0"),
+    color("#f6f0ff"),
+    color("#944dd3"),
+    color("#733fd7"),
+    color("#302384"),
+    color("#1c0c4e")
+  ];
+  return randomIn(options);
+
   if (row % 2 == 0) {
     return s % 2 == 0 ? colors.shapeA : colors.shapeB;
   }
