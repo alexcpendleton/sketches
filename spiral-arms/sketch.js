@@ -16,7 +16,6 @@ function setup() {
     x: width / 2,
     y: height / 2
   };
-  translate(200, 200);
   //noLoop();
   setupSeed();
   setupQueryVars();
@@ -26,13 +25,9 @@ var offset = 300;
 var scalar = 3.5;
 var speed = 1;
 var sizeIncrease = 1.5;
-var col = {
-  r: 255,
-  g: 0,
-  b: 0
-};
 var limit = 10000;
 var shapesDrawn = 0;
+var alphaChange = 1;
 function draw() {
   drawShapeAt();
   drawShapeAt(-1);
@@ -48,6 +43,11 @@ function drawShapeAt(mod = 1) {
   noStroke();
   ellipse(x, y, scalar, scalar);
   shapesDrawn++;
+  if (shapeAlpha == 0) {
+    shapeAlpha = alphaChange;
+  } else {
+    shapeAlpha += alphaChange;
+  }
 }
 
 function randomFromArray(arr) {
@@ -55,11 +55,13 @@ function randomFromArray(arr) {
   return arr[i];
 }
 function randomColorFromPallete() {
-  let r = randomFromArray(shapePalette);
-  r.setAlpha(shapeAlpha);
+  let x = randomFromArray(shapePalette);
+  x = x.levels;
   if (shapesDrawn < 5) {
-    console.log(r);
+    console.log(x);
+    //console.log(r);
   }
+  let r = color(x[0], x[1], x[2], shapeAlpha);
   return r;
 }
 
@@ -77,5 +79,11 @@ function setupQueryVars() {
   const vars = new URL(document.location).searchParams;
   if (vars.get("alpha")) {
     shapeAlpha = parseInt(vars.get("alpha", 10));
+  }
+  if (vars.get("alphaChange")) {
+    alphaChange = parseFloat(vars.get("alphaChange"));
+  }
+  if (vars.get("speed")) {
+    //speed = parseFloat(vars.get("speed"));
   }
 }
