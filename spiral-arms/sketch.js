@@ -20,29 +20,55 @@ function setup() {
   setupSeed();
   setupQueryVars();
 }
-var angle = 2.0;
-var offset = 300;
-var scalar = 3.5;
-var speed = 1;
-var sizeIncrease = 1.5;
-var limit = 10000;
+var angle = 3.0;
+var offset = 0;
+var shapeSize = 1;
+var whatever = 1;
+var speed = 50;
+var limit = 54; //000;
 var shapesDrawn = 0;
 var alphaChange = 1;
+var shapeChange = 3;
+var mc = 1.05;
+var whateverspeed = 10;
+
 function draw() {
-  drawShapeAt();
-  drawShapeAt(-1);
+  translate(300, 300);
+  if (shapesDrawn == 0) {
+    drawShapeAt(0, shapeSize * 0.5);
+  }
+  const col = randomColorFromPallete();
+  const m = shapesDrawn * 0.05;
+  drawShapeAt({ mod: 1.1, useColor: col, fa: m });
+  drawShapeAt({ mod: -1.1, useColor: col, fa: -1 * m });
+
   angle += speed;
-  scalar += speed;
+  //scalar += speed;
+  whatever += whateverspeed;
+  shapeSize += shapeChange;
 }
 
-function drawShapeAt(mod = 1) {
+function drawShapeAt({
+  mod = 1,
+  size = shapeSize,
+  useColor = null,
+  am = 1,
+  aa = 0,
+  fa = 0
+}) {
   if (shapesDrawn > limit) return;
-  var x = offset + cos(angle) * scalar * mod;
-  var y = offset + sin(angle) * scalar * mod;
-  fill(randomColorFromPallete());
+  console.log(shapesDrawn, x, y);
+
+  var x = offset + cos(angle * am + aa) * whatever * mod + fa;
+  var y = offset + sin(angle * am + aa) * whatever * mod + fa;
+
+  fill(useColor || randomColorFromPallete());
   noStroke();
-  ellipse(x, y, scalar, scalar);
+  ellipse(x, y, size, size);
+
   shapesDrawn++;
+  fill(0);
+  //text(shapesDrawn, x, y);
   if (shapeAlpha == 0) {
     shapeAlpha = alphaChange;
   } else {
@@ -55,12 +81,7 @@ function randomFromArray(arr) {
   return arr[i];
 }
 function randomColorFromPallete() {
-  let x = randomFromArray(shapePalette);
-  x = x.levels;
-  if (shapesDrawn < 5) {
-    console.log(x);
-    //console.log(r);
-  }
+  let x = randomFromArray(shapePalette).levels;
   let r = color(x[0], x[1], x[2], shapeAlpha);
   return r;
 }
@@ -84,6 +105,9 @@ function setupQueryVars() {
     alphaChange = parseFloat(vars.get("alphaChange"));
   }
   if (vars.get("speed")) {
-    //speed = parseFloat(vars.get("speed"));
+    speed = parseFloat(vars.get("speed"));
+  }
+  if (vars.get("angle")) {
+    angle = parseFloat(vars.get("angle"));
   }
 }
