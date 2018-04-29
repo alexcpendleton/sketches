@@ -1,6 +1,6 @@
 let mid = {};
 let shapePalette = [];
-let shapeAlpha = 1;
+let shapeAlpha = 127;
 function setup() {
   shapePalette = [
     color("#9a02a2"),
@@ -9,7 +9,14 @@ function setup() {
     color("#b8b8f3"),
     color("#d68fd6")
   ];
-  createCanvas(600, 600);
+  shapePallete = [
+    color("#9a02a2"),
+    color("#d68fd6"),
+    color("#d68fd6"),
+    color("#d68fd6"),
+    color("#d68fd6")
+  ];
+  createCanvas(700, 700);
   const bg = color("#000");
   background(bg);
   mid = {
@@ -20,32 +27,49 @@ function setup() {
   setupSeed();
   setupQueryVars();
 }
-var angle = 3.0;
+var angle = 10;
 var offset = 0;
 var shapeSize = 1;
 var whatever = 1;
 var speed = 50;
-var limit = 54; //000;
+var limit = 54; //000;alpha=127&alphaChange=25&angle=10
 var shapesDrawn = 0;
-var alphaChange = 1;
+var alphaChange = 25;
 var shapeChange = 3;
 var mc = 1.05;
 var whateverspeed = 10;
-
+var rotation = 0;
+var rotationChange = 10;
 function draw() {
-  translate(300, 300);
-  if (shapesDrawn == 0) {
-    drawShapeAt(0, shapeSize * 0.5);
-  }
-  const col = randomColorFromPallete();
-  const m = shapesDrawn * 0.05;
-  drawShapeAt({ mod: 1.1, useColor: col, fa: m });
-  drawShapeAt({ mod: -1.1, useColor: col, fa: -1 * m });
+  //console.log("draw");
+  translate(width / 2, height / 2);
 
-  angle += speed;
-  //scalar += speed;
-  whatever += whateverspeed;
-  shapeSize += shapeChange;
+  const r = PI + rotation;
+  rotation += rotationChange;
+  push();
+  rotate(r);
+  pop();
+  for (let shapeCount = 0; shapeCount < limit; shapeCount++) {
+    //console.log(shapeCount);
+    if (shapesDrawn == 0) {
+      drawShapeAt({ mod: 1, useColor: color("#fff"), size: shapeSize });
+    }
+
+    //console.log(shapeCount, frameCount, shapeCount % frameCount);
+    let col = color("#d68fd6"); //randomColorFromPallete();
+    if (shapeCount == limit - 1) {
+      col = color("#fff");
+      console.log(shapeCount);
+    }
+    const m = shapesDrawn * 0.05;
+    drawShapeAt({ mod: 1.1, useColor: col, fa: m });
+    drawShapeAt({ mod: -1.1, useColor: col, fa: -1 * m });
+
+    angle += speed;
+    //scalar += speed;
+    whatever += whateverspeed;
+    shapeSize += shapeChange;
+  }
 }
 
 function drawShapeAt({
@@ -57,7 +81,6 @@ function drawShapeAt({
   fa = 0
 }) {
   if (shapesDrawn > limit) return;
-  console.log(shapesDrawn, x, y);
 
   var x = offset + cos(angle * am + aa) * whatever * mod + fa;
   var y = offset + sin(angle * am + aa) * whatever * mod + fa;
@@ -109,5 +132,8 @@ function setupQueryVars() {
   }
   if (vars.get("angle")) {
     angle = parseFloat(vars.get("angle"));
+  }
+  if (vars.get("rotationChange")) {
+    rotationChange = parseFloat(vars.get("rotationChange"));
   }
 }
