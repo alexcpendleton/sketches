@@ -1,6 +1,6 @@
 // inspiration http://www.tylerlhobbs.com/static/img/st-a-800.jpg
 
-const dotRadius = 10;
+const dotRadius = 1;
 let densityStep = -10;
 let dotFuzz = 0; // 1; //0.8;
 let xFuzz = 7;
@@ -43,14 +43,24 @@ function draw() {
   }
 }
 function chooseColorByRowIndex(rowIndex) {
-  const colors = [
+  let c = color("#4A0087");
+  c.setAlpha(128);
+  return c;
+  let colors = [
     color("#4A0087"),
     color("#41D3BD"),
     color("#DE6449"), //color("#6C00C4"),
     color("#41D3BD"), //color("#7B00E0"),
     color("#8C00FF")
   ];
-  let c = colors[rowIndex];
+  colors = [
+    color("black"),
+    color("green"),
+    color("red"),
+    color("yellow"),
+    color("blue")
+  ];
+  c = colors[rowIndex];
   return color(c);
 }
 function chooseAlternateColorByRowIndex(rowIndex) {
@@ -83,7 +93,7 @@ let drawn = 0;
 function drawADot({ x, y, fillColor, numSides, rotation }) {
   noStroke();
   fill(fillColor);
-  const radius = fuzz(dotRadius, dotFuzz);
+  const radius = dotRadius; // fuzz(dotRadius, dotFuzz);
   numSides = numSides || Math.floor(random(5, 13));
   rotation = rotation || Math.floor(random(0, 360));
   push();
