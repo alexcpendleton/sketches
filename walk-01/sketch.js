@@ -80,7 +80,7 @@ function Hangydown({ x, y, color, size = 10 }) {
     }
 
     r = random(0, 1);
-    if (r < 0.005) {
+    if (r < 0.009) {
       this.size -= 1;
     }
     if (this.size < 1) {
