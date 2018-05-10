@@ -46,8 +46,9 @@ function Hangydown({ x, y, color, size = 10 }) {
   result.y = y;
   result.size = size;
   result.color = color;
+  result.done = false;
   result.walk = function() {
-    if (this.y > height) {
+    if (this.done || this.y > height) {
       return;
     }
     this.y = this.y + 1;
@@ -83,7 +84,9 @@ function Hangydown({ x, y, color, size = 10 }) {
       this.size -= 1;
     }
     if (this.size < 1) {
-      this.size = 1;
+      //this.size = 1;
+      this.done = true;
+      return;
     }
     fill(this.color);
     ellipse(this.x, this.y, this.size, this.size);
