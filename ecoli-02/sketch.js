@@ -1,13 +1,16 @@
 let mid = {};
 let dish;
 let lines = [];
-let numberOfPoints = 500;
-let nwCutoff = 24;
+let lines2 = [];
+let lines3 = [];
+let lines4 = [];
+let numberOfPoints = 800;
+let nwCutoff = 0;
 //https://lh3.googleusercontent.com/-ubAq4W0Zsqk/Wveb4ggSHII/AAAAAAAAVX4/rTcox6LuXVIHxywqhlXhSaoEAyIWJ6-mQCL0BGAYYCw/h467/2018-05-12.png
 function setup() {
   //960,720;
   createCanvas(700, 700);
-  const bg = ca("green", 50);
+  const bg = ca("#fff");
   background(bg);
   mid = {
     x: width / 2,
@@ -20,47 +23,81 @@ function setup() {
     radius: 300,
     numberOfPoints
   });
+  nwCutoff = dish.radius / 2;
   let linePoints = dish.points.filter(i => i.x < 0 && i.y < nwCutoff);
   lines = linePoints.map(i => {
     const xabs = Math.abs(i.x);
     return new ColonyLine({
       startingPosition: createVector(i.x, i.y),
-      length: random(xabs * 0.75, xabs * 1.5)
+      length: random(xabs * 0.85, xabs * 1.5),
+      fillColor: ca("#2AF3F2", randomInt(10, 255))
     });
   });
 
-  let upLinePoints = dish.points.filter(i => i.y > nwCutoff && i.x < 0);
-  lines.push(
-    ...upLinePoints.map(i => {
-      const line = new ColonyLine({
+  let linePoints2 = dish.points.filter(i => i.x > 0 && i.y > nwCutoff * -1.05);
+  lines2.push(
+    ...linePoints2.map(i => {
+      const xabs = Math.abs(i.x);
+      return new ColonyLine({
+        growthDirection: "-x",
         startingPosition: createVector(i.x, i.y),
-        length: random(10, Math.abs(i.y)),
-        growthDirection: "-y"
+        length: random(xabs * 0.75, xabs * 1.5),
+        fillColor: ca("#9d3bc6", randomInt(0, 10))
       });
-      //line.fillColor = ca("red");
-      return line;
+    })
+  );
+  lines3.push(
+    ...linePoints2.map(i => {
+      const xabs = Math.abs(i.x);
+      return new ColonyLine({
+        growthDirection: "-x",
+        startingPosition: createVector(i.x, i.y),
+        length: random(xabs * 0.75, xabs * 1.5),
+        fillColor: ca("#2A0D37", randomInt(0, 10))
+      });
     })
   );
 
-  let rightLinePoints = dish.points.filter(i => i.x > 0 && i.y > 0);
-  lines.push(
-    ...rightLinePoints.map(i => {
-      const line = new ColonyLine({
-        startingPosition: createVector(i.x, i.y),
-        length: random(10, Math.abs(i.x) * 0.75),
+  lines4.push(
+    ...linePoints2.map(i => {
+      const xabs = Math.abs(i.x);
+      return new ColonyLine({
         growthDirection: "-x",
-        radiusFunc: () => randomInt(5, 10),
-        bufferFunc: () => randomInt(7, 14)
+        startingPosition: createVector(i.x, i.y),
+        length: random(xabs * 0.75, xabs * 1.5),
+        fillColor: ca("#D71457", randomInt(0, 10))
       });
-      line.fillColor = ca("yellow");
-      return line;
     })
   );
 }
 function draw() {
   translate(mid.x, mid.y);
 
+  push();
+  rotate(radians(45));
   lines.forEach(i => i.draw());
+  pop();
+
+  push();
+  translate(10, 0);
+  rotate(radians(25));
+  lines2.forEach(i => {
+    if (i.startingPosition.y < 100) {
+      i.draw();
+    }
+  });
+  pop();
+
+  push();
+  rotate(radians(180));
+  //lines3.forEach(i => i.draw());
+  pop();
+
+  push();
+  translate(50, 25);
+  rotate(radians(-240));
+  lines4.forEach(i => i.draw());
+  pop();
   // draw a circle to be the petri dish
   if (!dish.drawn) {
     dish.fillColor = ca("#fff", 0);
@@ -89,11 +126,17 @@ function randomFromArray(arr) {
   return arr[i];
 }
 
+let calog = false;
 function ca(c, a) {
   const result = color(c);
   if (a !== undefined) {
-    result.setAlpha(a);
+    result.levels[3] = a;
   }
+  if (!calog) {
+    console.log(result);
+    calog = true;
+  }
+
   return result;
 }
 
@@ -198,7 +241,7 @@ class Dish {
     stroke(this.strokeColor);
     fill(this.fillColor);
     //this.drawPoints();
-    this.drawCircle();
+    //this.drawCircle();
     this.drawn = true;
   }
   drawPoints() {
