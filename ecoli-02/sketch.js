@@ -30,7 +30,7 @@ function setup() {
     return new ColonyLine({
       startingPosition: createVector(i.x, i.y),
       length: random(xabs * 0.85, xabs * 1.5),
-      fillColor: ca("#2AF3F2", randomInt(10, 255))
+      fillColor: ca("#2AF3F2", randomInt(40, 220))
     });
   });
 
@@ -42,7 +42,7 @@ function setup() {
         growthDirection: "-x",
         startingPosition: createVector(i.x, i.y),
         length: random(xabs * 0.75, xabs * 1.5),
-        fillColor: ca("#9d3bc6", randomInt(0, 10))
+        fillColor: ca("#9d3bc6", randomInt(20, 120))
       });
     })
   );
@@ -53,7 +53,7 @@ function setup() {
         growthDirection: "-x",
         startingPosition: createVector(i.x, i.y),
         length: random(xabs * 0.75, xabs * 1.5),
-        fillColor: ca("#2A0D37", randomInt(0, 10))
+        fillColor: ca("#2A0D37", randomInt(50, 100))
       });
     })
   );
@@ -65,7 +65,7 @@ function setup() {
         growthDirection: "-x",
         startingPosition: createVector(i.x, i.y),
         length: random(xabs * 0.75, xabs * 1.5),
-        fillColor: ca("#D71457", randomInt(0, 10))
+        fillColor: ca("#D71457", randomInt(10, 80))
       });
     })
   );
@@ -82,7 +82,7 @@ function draw() {
   translate(10, 0);
   rotate(radians(25));
   lines2.forEach(i => {
-    if (i.startingPosition.y < 100) {
+    if (i.startingPosition.y > 25) {
       i.draw();
     }
   });
@@ -130,7 +130,7 @@ let calog = false;
 function ca(c, a) {
   const result = color(c);
   if (a !== undefined) {
-    result.levels[3] = a;
+    result.setAlpha(a);
   }
   if (!calog) {
     console.log(result);
@@ -180,7 +180,7 @@ class ColonyLine {
     this.startingPosition = startingPosition;
     this.length = length;
     this.growthDirection = growthDirection || "x";
-    this.bufferFunc = bufferFunc || (() => randomInt(1, 4));
+    this.bufferFunc = bufferFunc || (() => randomInt(2, 8));
     this.radiusFunc = radiusFunc || (() => randomInt(2, 3));
     this.fillColor = fillColor;
   }
@@ -193,8 +193,9 @@ class ColonyLine {
       made.buffer = this.bufferFunc();
       if (this.fillColor) {
         made.fillColor = this.fillColor;
+      } else {
+        made.fillColor.setAlpha(random(128, 255));
       }
-      made.fillColor.setAlpha(random(128, 255));
       const addSize = made.radius + made.buffer;
       made.position = this.startingPosition.copy();
       const growth = colonyLength + made.radius + Math.floor(made.buffer / 2);

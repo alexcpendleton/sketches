@@ -1,10 +1,11 @@
 let mid = {};
 
-let maxCubies = 40;
-let cubieFrequency = 50;
-let cubieSize = 20;
-let cubieLifespan = 400;
-let cubies = [];
+let maxshapes = 20;
+let shapeSize = 50;
+let shapeLifespan = 400;
+let shapes = [];
+let numberOfShapes = 10;
+let shapeOffset = 300;
 function setup() {
   //960,720;
   createCanvas(700, 700, WEBGL);
@@ -14,20 +15,35 @@ function setup() {
   };
   //noLoop();
   setupSeed();
-
-  /*
-  cubies.push(makeCubie(20));
-  cubies.push(makeCubie(40));
-  cubies.push(makeCubie(60));
-  cubies.push(makeCubie(80));
-  cubies.push(makeCubie(100));
-  */
+  // create ten spheres
+  //smooth(2);
+  for (let i = 0; i < numberOfShapes; i++) {
+    // rotate each one n*10 degrees offset so it's like they're spinning
+    let angleModifier = i % 2 == 0 ? 1 : -1;
+    let made = nextshape(shapeSize + shapeOffset * i);
+    made.rotation.z.speed = 0.1;
+    made.rotation.z.angle = i * shapeOffset * angleModifier;
+    made.rotation.x.speed = 0.1;
+    made.rotation.x.angle = i * shapeOffset * angleModifier;
+    made.rotation.y.speed = 0.1;
+    made.rotation.y.angle = i * shapeOffset * angleModifier;
+    made.growth = 0.25;
+    //made.size =
+    //made.rotation.y.speed = 0.001;
+    //made.rotation.y.angle = i * shapeOffset;
+    made.stroke.weight = 0.5;
+    made.stroke.color.setAlpha(58);
+    made.detailX = 16;
+    made.detailY = 16;
+    shapes.push(made);
+  }
+  console.table(shapes);
 }
 let colori = 0;
-function nextCubie(size) {
+function nextshape(size) {
   const c = pickNextColor(colori);
   colori++;
-  const result = new GrowyCube({
+  const result = new GrowyShape({
     stroke: {
       weight: 2,
       color: c
@@ -37,16 +53,16 @@ function nextCubie(size) {
     age: 0,
     rotation: {
       x: {
-        speed: 0.5,
-        angle: random(0, 360)
+        speed: 0,
+        angle: 0
       },
       y: {
-        speed: 0.5,
-        angle: random(0, 360)
+        speed: 0,
+        angle: 0
       },
       z: {
-        speed: 10,
-        angle: random(0, 360)
+        speed: 0,
+        angle: 0
       }
     }
   });
@@ -55,20 +71,14 @@ function nextCubie(size) {
 function draw() {
   const bg = color("#000");
   background(bg);
-  let isResetFrame = false;
 
-  if (cubies.length < maxCubies && frameCount % cubieFrequency == 0) {
-    cubies.push(nextCubie(cubieSize));
-    isResetFrame = true;
-    console.log("add cubie", cubies.length);
-  }
   //translate(mid.x / 4, mid.y / 4);
-  //let cubieResetSize = width * 1.25;
-  cubies.forEach(i => {
+  //let shapeResetSize = width * 1.25;
+  shapes.forEach(i => {
     i.draw();
     i.grow();
-    if (i.age >= cubieLifespan) {
-      i.reset();
+    if (i.age >= shapeLifespan) {
+      //i.reset();
     }
   });
 }
@@ -97,7 +107,7 @@ function randomFromArray(arr) {
   return arr[i];
 }
 
-class GrowyCube {
+class GrowyShape {
   constructor(opts) {
     Object.assign(this, opts);
   }
@@ -106,10 +116,12 @@ class GrowyCube {
     noFill();
     rotateX(radians(this.rotation.x.angle));
     rotateY(radians(this.rotation.y.angle));
+    rotateZ(radians(this.rotation.z.angle));
     strokeWeight(this.stroke.weight);
     stroke(this.stroke.color);
-    box(this.size);
-    //sphere(this.size, 10, 10);
+    //box(this.size);
+    sphere(this.size, this.detailX, this.detailY);
+    //torus(this.size);
     pop();
   }
   grow() {
@@ -130,5 +142,5 @@ function pickNextColor(index) {
   if (i >= options.length) {
     i = i % options.length;
   }
-  return options[i];
+  return color(options[i]);
 }
