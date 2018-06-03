@@ -1,10 +1,14 @@
 let mid = {};
-
-let maxGrowyShapes = 6;
-let growyShapeFrequency = 120;
-let growyShapeSize = 24;
-let growyShapeLifespan = 120 * 6;
+//?frequency=60&startingRadius=48&lifespan=1040&growthRate=1
+let maxShapes = qp("maxShapes", 5);
+let frequency = qp("frequency", 60);
+let startingRadius = qp("startingRadius", 48);
+let lifespan = qp("lifespan", 1040);
+let growthRate = qp("growthRate", 1);
 let growyShapes = [];
+let sourcePoints = [];
+let stopAdding = false;
+
 function setup() {
   //960,720;
   createCanvas(700, 700, WEBGL);
@@ -13,10 +17,11 @@ function setup() {
     y: 0
   };
   setupSeed();
-  sourcePoints = polygonPoints(growyShapeSize * 5, 6);
+  sourcePoints = polygonPoints(startingRadius * 5, 6);
 }
 let colori = 0;
-function nextGrowyShape(size) {
+
+function nextGrowyShape(radius) {
   const c = pickNextColor(colori);
   colori++;
   const result = new GrowyCube({
@@ -24,8 +29,8 @@ function nextGrowyShape(size) {
       weight: 2,
       color: c
     },
-    size: size,
-    growth: 1,
+    size: radius,
+    growth: growthRate,
     age: 0,
     rotation: {
       x: {
@@ -44,18 +49,17 @@ function nextGrowyShape(size) {
   });
   return result;
 }
-let sourcePoints = [];
-let stopAdding = false;
+
 function draw() {
   const bg = color("#000");
   background(bg);
   translate(mid.x, mid.y);
-  if (growyShapes.length < maxGrowyShapes && frameCount % growyShapeFrequency == 0) {
-    if (stopAdding) 
+  if (frameCount == 1 || growyShapes.length < maxShapes && frameCount % frequency == 0) {
+    if (stopAdding)
       return;
-    const next = nextGrowyShape(growyShapeSize);
+    const next = nextGrowyShape(startingRadius);
     growyShapes.push(next);
-    if (growyShapes.length == maxGrowyShapes) {
+    if (growyShapes.length == maxShapes) {
       stopAdding = true;
     }
     console.log("add growyShape", growyShapes[growyShapes.length - 1]);
@@ -77,7 +81,7 @@ function drawGrowyShapesAt(x, y, grow = false) {
     if (grow) {
       currentShape.grow();
 
-      if (currentShape.age >= growyShapeLifespan) {
+      if (currentShape.age >= lifespan) {
         //growyShapes.splice(i, 1);
         console.log("reset", currentShape, i);
         currentShape.reset();
@@ -86,15 +90,18 @@ function drawGrowyShapesAt(x, y, grow = false) {
   }
   pop();
 }
-let isCurrentlyPaused = false;
+
 function mouseReleased() {
-  if (isCurrentlyPaused) {
-    isCurrentlyPaused = false;
+  if (mouseReleased.isCurrentlyPaused) {
+    console.log("resumed");
+    mouseReleased.isCurrentlyPaused = false;
     return loop();
   }
-  isCurrentlyPaused = true;
+  mouseReleased.isCurrentlyPaused = true;
   noLoop();
+  console.log("paused");
 }
+
 function setupSeed() {
   const fromLocation = new URL(document.location)
     .searchParams
@@ -107,6 +114,7 @@ function setupSeed() {
   console.log(window.seed);
   randomSeed(window.seed);
 }
+
 function randomFromArray(arr) {
   const i = Math.floor(random(0, arr.length));
   return arr[i];
@@ -122,10 +130,14 @@ function polygonPoints(radius, numberOfPoints, {
   for (var a = 0; a < TWO_PI; a += angle) {
     var sx = x + cos(a + ao) * radius;
     var sy = y + sin(a + ao) * radius;
-    results.push({x: sx, y: sy});
+    results.push({
+      x: sx,
+      y: sy
+    });
   }
   return results;
 }
+
 function drawHex(radius, pos = {
   x: 0,
   y: 0
@@ -173,4 +185,20 @@ function pickNextColor(index) {
     i = i % options.length;
   }
   return options[i];
+}
+
+function qp(name, def, customParser) {
+  let value = new URL(document.location).searchParams.get(name);
+  if (value === null || value === undefined || value === "") {
+    value = def;
+  }
+  if (customParser) {
+    value = customParser(value);
+  } else {
+    if (!isNaN(value)) {
+      value = parseFloat(value);
+    }
+  }
+  console.log("qp", name, value, def);
+  return value;
 }
