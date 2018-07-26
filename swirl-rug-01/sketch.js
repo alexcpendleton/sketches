@@ -20,6 +20,7 @@ function draw() {
   const maxRingX = size;
   const numberOfRings = maxRingX / ringSize;
   translate(mid.x, mid.y);
+  //smooth
   for (let i = 0; i < numberOfRings; i++) {
     const ringColor = randomFromArray(palette);
     const ringW = i * ringSize;
@@ -29,15 +30,36 @@ function draw() {
   }
 }
 
-function drawBaseRing(ringColor, ringW, ringH) {
-  
+function drawBaseRing(ringColor, ringW, ringH) { 
+  //drawSolidRing(ringColor, ringW, ringH);
+  drawFuzzyDotRing(ringColor, ringW, ringH);
+}
+function drawSolidRing(ringColor, ringW, ringH) {
   stroke(ringColor);
   noFill();
   strokeWeight(ringSize);
   ellipse(0, 0, ringW, ringH);
 }
+function drawFuzzyDotRing(ringColor, ringW, ringH) {
+  //this should be better, but good enough for now
+  let numberOfAnchorPoints = ringW;
+  let anchorPoints = polygonPoints(ringW, numberOfAnchorPoints);
+  for(let i = 0; i < numberOfAnchorPoints; i++) {
+    let pointRadius = random(ringSize*0.8, ringSize*1.2)*0.8;
+    let point = anchorPoints[i];
+    noStroke();
+    const numberOfFuzzyPoints = random(5, 20);
+    for(let j = 0; j < numberOfFuzzyPoints; j++) {
+      let fuzzyPointX = fuzz(point.x,1);
+      let fuzzyPointY = fuzz(point.y,1);
+      fill(ca(ringColor, random(128, 255)));
+      ellipse(fuzzyPointX, fuzzyPointY, pointRadius);
+    }
+  }
+}
 
 function drawArcs(ringColor, ringW, ringH) {
+  return;
   const numberOfArcs = Math.floor(random(0, 10));
   const arcPalette = palette.filter(i=>i!=ringColor);
   const makeRandomAngle = (min=0, max=180)=>(Math.floor(random(min, max)));
@@ -114,4 +136,18 @@ function ca(c, a) {
     result.setAlpha(a);
   }
   return result;
+}
+function fuzz(i, fuzzFactor) {
+  let r = random(i - fuzzFactor, i + fuzzFactor);
+  return r;
+}
+function polygonPoints(radius, numberOfPoints, { x = 0, y = 0, ao = 0 } = {}) {
+  var angle = TWO_PI / numberOfPoints;
+  const results = [];
+  for (var a = 0; a < TWO_PI; a += angle) {
+    var sx = x + cos(a + ao) * radius;
+    var sy = y + sin(a + ao) * radius;
+    results.push({ x: sx, y: sy });
+  }
+  return results;
 }
