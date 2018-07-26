@@ -1,34 +1,50 @@
 let mid = {};
+let lastGrowthSite = {};
 let size = qp("size", 600);
 let bg = () => qpColor("bg", "000");
 let lineColor = qpColor("lineColor", "fff");
 
-let frequency = qp("frequency", 60);
-let amplitude = qp("amplitude", 80);
-let lineLength = qp("lineLength", 400);
-let xOffset = 0;
-let step = qp("step", 10);
 
 function setup() {
+  //960,720;
   createCanvas(size, size);
+  background(bg());
   mid = {
-    x: size / 2,
-    y: size / 2
+    x: width / 2,
+    y: height / 2
   };
   //noLoop();
   setupSeed();
+
+  lastGrowthSite = {x:0, y:0 };
 }
 
 function draw() {
-  background(bg());
   translate(mid.x, mid.y);
-  let numberOfPoints = Math.floor(size / step);
-  for(var i = 0; i < numberOfPoints; i++) {
-    let x = i;
-    let s = (x+xOffset)/frequency;
-    let y = 0;
-    ellipse(x, y, 10, 10);
-  }
+  /*
+  We have now described all the components of the fast growth
+algorithm. To sum up, the algorithm is initialized as follows:
+1) Insert a point charge at the origin,
+2) Locate the candidate sites around the charge. On a
+square 2D (3D) grid, these would be the eight (twentysix)
+neighbors,
+3) Calculate the potential at each candidate site according
+to Eqn. 10.
+An iteration of the algorithm is as follows:
+1) Randomly select a growth site according to Eqn. 12.
+2) Add a new point charge at the growth site.
+3) Update the potential at all the candidate sites according
+to Eqn. 11.
+4) Add the new candidate sites surrounding the growth site.
+5) Calculate the potential at new candidate sites using Eqn.
+10.*/
+  
+  next();
+}
+function next() {
+  const newGrowthSite = randomlySelectGrowthSite(lastGrowthSite);
+  const candidates = locateCandidates(growthSite);
+  const potentials = calculatePotential(candidates);
 }
 
 function setupSeed() {
@@ -72,13 +88,4 @@ function mouseReleased() {
   mouseReleased.isCurrentlyPaused = true;
   noLoop();
   console.log("paused");
-}
-
-function qpColor(name, def) {
-  return qp(name, def, (v) => {
-    if (v) {
-      return "#" + v;
-    }
-    return v;
-  })
 }

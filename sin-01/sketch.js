@@ -21,14 +21,22 @@ function setup() {
 
 function draw() {
   background(bg());
-  translate(mid.x, mid.y);
-  let numberOfPoints = Math.floor(size / step);
+  translate(0, mid.y);
+  let numberOfPoints =size;
+  beginShape(LINES);
+  noFill();
+  stroke(255);
+  strokeWeight(10);
+  strokeCap(PROJECT);
+  smooth();
+  
   for(var i = 0; i < numberOfPoints; i++) {
     let x = i;
     let s = (x+xOffset)/frequency;
-    let y = 0;
-    ellipse(x, y, 10, 10);
+    let y = amplitude * Math.sin(s);
+    vertex(x, y);
   }
+  endShape();
 }
 
 function setupSeed() {
