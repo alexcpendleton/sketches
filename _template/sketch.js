@@ -1,35 +1,19 @@
 let mid = {};
-let size = qp("size", 600);
-let bg = () => qpColor("bg", "000");
-let lineColor = qpColor("lineColor", "fff");
-
-let frequency = qp("frequency", 60);
-let amplitude = qp("amplitude", 80);
-let lineLength = qp("lineLength", 400);
-let xOffset = 0;
-let step = qp("step", 10);
 
 function setup() {
-  createCanvas(size, size);
+  //960,720;
+  createCanvas(screen.width, screen.height);
+  const bg = color("#000");
+  background(bg);
   mid = {
-    x: size / 2,
-    y: size / 2
+    x: width / 2,
+    y: height / 2
   };
   //noLoop();
   setupSeed();
 }
 
-function draw() {
-  background(bg());
-  translate(mid.x, mid.y);
-  let numberOfPoints = Math.floor(size / step);
-  for(var i = 0; i < numberOfPoints; i++) {
-    let x = i;
-    let s = (x+xOffset)/frequency;
-    let y = 0;
-    ellipse(x, y, 10, 10);
-  }
-}
+function draw() {}
 
 function setupSeed() {
   const fromLocation = new URL(document.location).searchParams.get("seed");
@@ -72,13 +56,4 @@ function mouseReleased() {
   mouseReleased.isCurrentlyPaused = true;
   noLoop();
   console.log("paused");
-}
-
-function qpColor(name, def) {
-  return qp(name, def, (v) => {
-    if (v) {
-      return "#" + v;
-    }
-    return v;
-  })
 }
