@@ -3,6 +3,7 @@ let bg = {};
 let shapePalette = [];
 let numberOfSegments = qp("numberOfSegments", 16);
 let numberOfSpinners = qp("numberOfSpinners", 10);
+let anxiety = qp("anxiety", 0.08);
 
 function setup() {
   //960,720;
@@ -45,7 +46,7 @@ function drawNextAnxietySpinner(i) {
   push();
   const radius = (i + 1) * 24;
   const direction = i % 2 == 0 ? 1 : -1;
-  const scaleMax = random(0.02, 0.08);
+  const scaleMax = random(0, anxiety);
   scale(random(0, scaleMax) + 1);
   rotate(radians(rotationCount) * direction);
   drawGradientCircle({
