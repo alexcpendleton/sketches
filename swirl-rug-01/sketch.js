@@ -5,8 +5,8 @@ const ringSize = qp("ringSize", 15);
 
 function setup() {
   //960,720;
-  createCanvas(size, size);
-  const bg = color(0, 0, 0, 0);
+  createCanvas(size, size); //, WEBGL);
+  const bg = color(255, 255, 255, 255);
   background(bg);
   mid = {
     x: width / 2,
@@ -17,10 +17,16 @@ function setup() {
 }
 
 function draw() {
+  translate(mid.x, mid.y);
+  //smooth();
+  drawRings();
+  //drawRings();
+  //drawRings();
+}
+
+function drawRings() {
   const maxRingX = size;
   const numberOfRings = maxRingX / ringSize;
-  translate(mid.x, mid.y);
-  //smooth
   for (let i = 0; i < numberOfRings; i++) {
     const ringColor = randomFromArray(palette);
     const ringW = i * ringSize;
@@ -30,7 +36,7 @@ function draw() {
   }
 }
 
-function drawBaseRing(ringColor, ringW, ringH) { 
+function drawBaseRing(ringColor, ringW, ringH) {
   //drawSolidRing(ringColor, ringW, ringH);
   drawFuzzyDotRing(ringColor, ringW, ringH);
 }
@@ -44,14 +50,24 @@ function drawFuzzyDotRing(ringColor, ringW, ringH) {
   //this should be better, but good enough for now
   let numberOfAnchorPoints = ringW;
   let anchorPoints = polygonPoints(ringW, numberOfAnchorPoints);
-  for(let i = 0; i < numberOfAnchorPoints; i++) {
-    let pointRadius = random(ringSize*0.8, ringSize*1.2)*0.8;
+  for (let i = 0; i < numberOfAnchorPoints; i++) {
+    let numberOfFuzzyPoints = random(5, 20);
+    let fuzzyPointFactor = 1;
+    let pointRadius = random(ringSize * 0.8, ringSize * 1.2) * 0.8;
+    //let pointRadius = randomGaussian(ringSize, 0.4)*0.8;
+    // not right but really cool
+    if (false) {
+      pointRadius = noise(i); // * 2;
+      fuzzyPointFactor = 10;
+      numberOfFuzzyPoints *= 10;
+    }
+    //let pointRadius = ringSize*noise(ringW+i);
+
     let point = anchorPoints[i];
     noStroke();
-    const numberOfFuzzyPoints = random(5, 20);
-    for(let j = 0; j < numberOfFuzzyPoints; j++) {
-      let fuzzyPointX = fuzz(point.x,1);
-      let fuzzyPointY = fuzz(point.y,1);
+    for (let j = 0; j < numberOfFuzzyPoints; j++) {
+      let fuzzyPointX = fuzz(point.x, fuzzyPointFactor);
+      let fuzzyPointY = fuzz(point.y, fuzzyPointFactor);
       fill(ca(ringColor, random(128, 255)));
       ellipse(fuzzyPointX, fuzzyPointY, pointRadius);
     }
@@ -61,14 +77,14 @@ function drawFuzzyDotRing(ringColor, ringW, ringH) {
 function drawArcs(ringColor, ringW, ringH) {
   return;
   const numberOfArcs = Math.floor(random(0, 10));
-  const arcPalette = palette.filter(i=>i!=ringColor);
-  const makeRandomAngle = (min=0, max=180)=>(Math.floor(random(min, max)));
-  for(let i = 0; i < numberOfArcs; i++) {
+  const arcPalette = palette.filter(i => i != ringColor);
+  const makeRandomAngle = (min = 0, max = 180) => Math.floor(random(min, max));
+  for (let i = 0; i < numberOfArcs; i++) {
     let arcTransparancy = Math.floor(random(128, 212));
-    let arcColor = randomFromArray(arcPalette)
-    
+    let arcColor = randomFromArray(arcPalette);
+
     stroke(ca(arcColor, arcTransparancy));
-    let arcSize = Math.floor(random(ringSize*.3, ringSize*.4));
+    let arcSize = Math.floor(random(ringSize * 0.3, ringSize * 0.4));
     strokeWeight(arcSize);
     noFill();
     let radius = ringW;
