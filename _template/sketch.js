@@ -1,5 +1,5 @@
 let mid = {};
-
+let palette = [];
 function setup() {
   //960,720;
   createCanvas(screen.width, screen.height);
@@ -56,4 +56,24 @@ function mouseReleased() {
   mouseReleased.isCurrentlyPaused = true;
   noLoop();
   console.log("paused");
+}
+
+function ca(c, a) {
+  const result = color(c);
+  if (a !== undefined) {
+    result.setAlpha(a);
+  }
+  return result;
+}
+
+function randomColorFromPallete() {
+  let x = randomFromArray(palette);
+  x = x.levels;
+  let r = color(x[0], x[1], x[2]);
+  return r;
+}
+
+function randomFromArray(arr) {
+  const i = Math.floor(random(0, arr.length));
+  return arr[i];
 }
