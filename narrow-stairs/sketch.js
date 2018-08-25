@@ -24,27 +24,39 @@ function setup() {
 }
 
 function draw() {
-  debugger;
   const numberOfVerticalBands = 100;
   const averageBandWidth = Math.ceil(bounds.width / numberOfVerticalBands);
   noStroke();
   for (let i = 0; i < numberOfVerticalBands; i++) {
-    const bandWidth = averageBandWidth;
-    const x = bandWidth * i;
+    const x = averageBandWidth * i;
     // draw rectangles between 1/10th and 1/5th the height of the image
     // until the last y extends beyond the height
     let y = 0;
-    let minRectHeight = bounds.height / 10;
-    let maxRectHeight = bounds.height / 18;
 
     while (y < bounds.height) {
-      const rectColor = pickColorByX(x);
-      const rectHeight = Math.ceil(random(minRectHeight, maxRectHeight));
-      fill(rectColor);
-      rect(x, y, bandWidth, rectHeight);
-      y = y + rectHeight;
+      const drawn = drawBandRect(x, y, averageBandWidth);
+      y += drawn.height;
     }
   }
+}
+
+function drawBandRect(x, y, averageBandWidth) {
+  let bandWidth = fuzz(averageBandWidth + 2, 2);
+  let minRectHeight = bounds.height / 10;
+  let maxRectHeight = bounds.height / 18;
+  const rectColor = pickColorByX(x);
+  const rectHeight = Math.ceil(random(minRectHeight, maxRectHeight));
+  fill(rectColor);
+  const fuzzX = fuzz(x, 2);
+  rect(fuzzX, y, bandWidth, rectHeight);
+  return {
+    height: rectHeight
+  };
+}
+
+function fuzz(i, fuzzFactor) {
+  let r = random(i - fuzzFactor, i + fuzzFactor);
+  return r;
 }
 
 function pickColorByX(x) {
@@ -60,16 +72,22 @@ function pickColorByX(x) {
   if (mapped < 0.05) {
     return left;
   }
-  if (mapped < 0.2) {
+  if (mapped > 0.95) {
+    return right;
+  }
+  if (mapped < 0.15) {
     return random(0, 1) < 0.7 ? left : middle;
   }
-  if (mapped < 0.5) {
+  if (mapped < 0.3) {
     return random(0, 1) < 0.5 ? left : middle;
   }
-  if (mapped < 0.85) {
+  if (mapped < 0.5) {
+    return random(0, 1) < 0.8 ? middle : left;
+  }
+  if (mapped < 0.8) {
     return random(0, 1) < 0.8 ? middle : right;
   }
-  return right;
+  return random(0, 1) < 0.4 ? middle : right;
 }
 
 function setupSeed() {
