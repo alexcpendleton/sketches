@@ -47,7 +47,7 @@ function draw() {
   strokeWeight(lineWeight);
   stroke(lineColor);
   rectMode(CENTER);
-  //let amountOfDraws = 20000;
+  let amountOfDraws = 1;
   for (let drawIndex = 0; drawIndex < amountOfDraws; drawIndex++) {
     for (
       let verticalIndex = 0;
