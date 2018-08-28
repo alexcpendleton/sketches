@@ -1,9 +1,10 @@
 let mid = {};
 let palette = [];
+let bg;
 function setup() {
   //960,720;
   createCanvas(screen.width, screen.height);
-  const bg = color("#000");
+  bg = qpColor("bg", "#fff");
   background(bg);
   mid = {
     x: width / 2,
@@ -45,6 +46,14 @@ function qp(name, def, customParser) {
   }
   console.log("qp", name, value, def);
   return value;
+}
+function qpColor(name, def) {
+  return qp(name, def, v => {
+    if (v) {
+      return "#" + v;
+    }
+    return v;
+  });
 }
 
 function mouseReleased() {
