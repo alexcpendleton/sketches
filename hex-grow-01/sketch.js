@@ -29,19 +29,20 @@ function setup() {
   setupSeed();
 
   sourcePoints = polygonPoints(startingRadius * 5, 6);
-  strokeCap(ROUND)
+  strokeCap(ROUND);
 
-  palette = qp("palette", null, (p) => {
+  palette = qp("palette", null, p => {
     if (!p) return [];
     console.log("split p soup", p.split(","));
     return p.split(",").map(i => color("#" + i));
   });
-  bg = qp("bg", color("#000"), (i) => color("#" + i));
+  bg = qp("bg", color("#000"), i => color("#" + i));
 
   capturer = makeCapturer();
   capturer.start();
 }
 
+let capturer = {};
 function makeCapturer() {
   if (record > 0) {
     return new CCapture({
@@ -72,7 +73,7 @@ function nextGrowyShape(radius) {
     rotation: {
       x: {
         speed: rotationSpeed,
-        angle: rotationAngle,
+        angle: rotationAngle
       },
       y: {
         speed: 0.5,
@@ -91,12 +92,11 @@ function draw() {
   background(bg);
   translate(mid.x, mid.y);
   if (frameCount < 5) {
-    console.log(frameCount, frameCount % frequency);;
+    console.log(frameCount, frameCount % frequency);
   }
   const isNewShapeFrame = frameCount % frequency == 0;
   if (growyShapes.length < maxShapes && isNewShapeFrame) {
-    if (stopAdding)
-      return;
+    if (stopAdding) return;
     const next = nextGrowyShape(startingRadius);
     growyShapes.push(next);
     if (growyShapes.length == maxShapes) {
@@ -150,9 +150,7 @@ function mouseReleased() {
 }
 
 function setupSeed() {
-  const fromLocation = new URL(document.location)
-    .searchParams
-    .get("seed");
+  const fromLocation = new URL(document.location).searchParams.get("seed");
   if (fromLocation) {
     window.seed = parseFloat(fromLocation);
   } else {
@@ -167,11 +165,7 @@ function randomFromArray(arr) {
   return arr[i];
 }
 
-function polygonPoints(radius, numberOfPoints, {
-  x = 0,
-  y = 0,
-  ao = 0
-} = {}) {
+function polygonPoints(radius, numberOfPoints, { x = 0, y = 0, ao = 0 } = {}) {
   var angle = TWO_PI / numberOfPoints;
   const results = [];
   for (var a = 0; a < TWO_PI; a += angle) {
@@ -185,10 +179,13 @@ function polygonPoints(radius, numberOfPoints, {
   return results;
 }
 
-function drawHex(radius, pos = {
-  x: 0,
-  y: 0
-}) {
+function drawHex(
+  radius,
+  pos = {
+    x: 0,
+    y: 0
+  }
+) {
   push();
   translate(pos.x, pos.y);
   const points = polygonPoints(radius, 6);
@@ -227,7 +224,13 @@ class GrowyCube {
 }
 
 function pickNextColor(index) {
-  let options = palette || ["#0ea3bd", "#eac435", "#e40066", "#03cea4", "#fb4d3d"];
+  let options = palette || [
+    "#0ea3bd",
+    "#eac435",
+    "#e40066",
+    "#03cea4",
+    "#fb4d3d"
+  ];
   let i = index;
   if (i >= options.length) {
     i = i % options.length;
